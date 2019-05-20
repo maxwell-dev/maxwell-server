@@ -1,0 +1,12 @@
+{application, maxwell_server,
+  [{description, "Server of maxwell project."},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {maxwell_server_app, []}},
+    {applications, [kernel, stdlib, lager, cowboy, basin, maxwell_protocol]},
+    {env, []},
+    {modules, []},
+    {maintainers, []},
+    {licenses, ["Apache 2.0"]},
+    {links, []}
+  ]}.
