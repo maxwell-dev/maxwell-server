@@ -59,15 +59,13 @@ websocket_init({Req, State}) ->
             {ok, Value} -> Value;
             error -> #{}
           end,
-  Endpoint2 = convert_endpoint(Endpoint),
   HandlerExt = State#state.handler_ext,
-  StateExt = HandlerExt:init(#{agent=>Agent, endpoint=>Endpoint2}),
-  noreply(State#state{peer_endpoint = Endpoint2, state_ext = StateExt}).
+  StateExt = HandlerExt:init(#{agent=>Agent, endpoint=>Endpoint}),
+  noreply(State#state{peer_endpoint = Endpoint, state_ext = StateExt}).
 
 websocket_handle({binary, EncodedMsg}, State) ->
-  Msg = maxwell_protocol:decode_msg(EncodedMsg),
-  lager:debug("Received msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
-  recv(Msg, State);
+  Msg = recv(EncodedMsg, State),
+  handle(Msg, State);
 websocket_handle(Msg, State) ->
   lager:debug("Ignored msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
   noreply(State).
@@ -91,40 +89,14 @@ terminate(Reason, Req, State) ->
 %%% Internal functions
 %%%===================================================================
 
-recv(#ping_req_t{}, State) ->
+recv(EncodedMsg, State) ->
+  Msg = maxwell_protocol:decode_msg(EncodedMsg),
+  lager:debug("Received msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
+  Msg.
+
+handle(#ping_req_t{}, State) ->
   reply(#ping_rep_t{}, State);
-recv(#pull_req_t{ref = Ref} = Msg, State) ->
-  HandlerExt = State#state.handler_ext,
-  case HandlerExt:pre_pull(Msg, State#state.state_ext) of
-    ok ->
-      forward_to_puller(Msg),
-      noreply(State);
-    Error ->
-      reply(build_error_rep(Error, Ref), State)
-  end;
-recv(#push_req_t{ref = Ref} = Msg, State) ->
-  HandlerExt = State#state.handler_ext,
-  case HandlerExt:pre_push(Msg, State#state.state_ext) of
-    ok ->
-      forward_to_pusher(Msg),
-      noreply(State);
-    Error ->
-      reply(build_error_rep(Error, Ref), State)
-  end;
-recv(Msg, State) ->
-  forward_to_handler_ext(Msg, State).
-
-forward_to_puller(Msg) ->
-  {ok, Pid} = maxwell_server_puller:ensure_started(
-    Msg#pull_req_t.topic, self()),
-  maxwell_server_puller:pull(Pid, Msg).
-
-forward_to_pusher(Msg) ->
-  {ok, Pid} = maxwell_server_pusher:ensure_started(
-    Msg#push_req_t.topic, self()),
-  maxwell_server_pusher:push(Pid, Msg).
-
-forward_to_handler_ext(Msg, State) ->
+handle(Msg, State) ->
   HandlerExt = State#state.handler_ext,
   case HandlerExt:handle(Msg, State#state.state_ext) of
     {reply, Reply, StateExt} ->
@@ -134,15 +106,6 @@ forward_to_handler_ext(Msg, State) ->
     {stop, _, StateExt} ->
       stop(State#state{state_ext = StateExt})
   end.
-
-convert_endpoint(Endpoint) ->
-  {{A, B, C, D}, Port} = Endpoint,
-  list_to_binary(io_lib:format("~w.~w.~w.~w:~w", [A, B, C, D, Port])).
-
-build_error_rep(Error, Ref) ->
-  #error_rep_t{
-    code = 1, desc = io_lib:format("~p", [Error]), ref = Ref
-  }.
 
 reply(Reply, State) ->
   lager:debug("Sending msg: ~p, to: ~p", [Reply, State#state.peer_endpoint]),

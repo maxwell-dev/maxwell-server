@@ -11,10 +11,8 @@
 -include_lib("maxwell_protocol/include/maxwell_protocol_pb.hrl").
 
 -export([
-  init/1,
-  pre_pull/2,
-  pre_push/2,
-  handle/2,
+  handle/2, 
+  init/1, 
   terminate/2
 ]).
 
@@ -23,23 +21,14 @@
 %%%===================================================================
 %%% Server callbacks
 %%%===================================================================
-init(_Req) ->
-  #state{}.
+init(_Req) -> #state{}.
 
-pre_pull(_Msg, _State) ->
-  ok.
-pre_push(_Msg, _State) ->
-  ok.
+handle(_Msg, State) -> noreply(State).
 
-handle(_Msg, State) ->
-  noreply(State).
-
-terminate(_Reason, _State) ->
-  ok.
+terminate(_Reason, _State) -> ok.
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
 
-noreply(State) ->
-  {noreply, State}.
+noreply(State) -> {noreply, State}.
