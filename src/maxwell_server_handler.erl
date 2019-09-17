@@ -59,9 +59,10 @@ websocket_init({Req, State}) ->
             {ok, Value} -> Value;
             error -> #{}
           end,
+  Endpoint2 = convert_endpoint(Endpoint),
   HandlerExt = State#state.handler_ext,
-  StateExt = HandlerExt:init(#{agent=>Agent, endpoint=>Endpoint}),
-  noreply(State#state{peer_endpoint = Endpoint, state_ext = StateExt}).
+  StateExt = HandlerExt:init(#{agent=>Agent, endpoint=>Endpoint2}),
+  noreply(State#state{peer_endpoint = Endpoint2, state_ext = StateExt}).
 
 websocket_handle({binary, EncodedMsg}, State) ->
   Msg = recv(EncodedMsg, State),
@@ -88,6 +89,10 @@ terminate(Reason, Req, State) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+convert_endpoint(Endpoint) ->
+  {{A, B, C, D}, Port} = Endpoint,
+  list_to_binary(io_lib:format("~w.~w.~w.~w:~w", [A, B, C, D, Port])).
 
 recv(EncodedMsg, State) ->
   Msg = maxwell_protocol:decode_msg(EncodedMsg),
