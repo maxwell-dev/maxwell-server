@@ -12,7 +12,6 @@
 
 %% API
 -export([
-  send/2,
   initial_state/0
 ]).
 
@@ -25,16 +24,11 @@
   terminate/3
 ]).
 
--define(SEND_CMD(Msg), {'$send', Msg}).
-
 -record(state, {handler_ext, peer_endpoint, state_ext}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
-
-send(Pid, Msg) ->
-  Pid ! ?SEND_CMD(Msg).
 
 initial_state() ->
   HandlerExt = maxwell_server_config:get_handler_ext(),
@@ -71,11 +65,8 @@ websocket_handle(Msg, State) ->
   lager:debug("Ignored msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
   noreply(State).
 
-websocket_info(?SEND_CMD(Msg), State) ->
-  reply(Msg, State);
-websocket_info(Info, State) ->
-  lager:error("Received unknown info: ~p", [Info]),
-  noreply(State).
+websocket_info(Msg, State) ->
+  handle(Msg, State).
 
 terminate(Reason, Req, State) ->
   lager:debug(
