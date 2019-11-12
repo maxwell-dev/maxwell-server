@@ -58,13 +58,12 @@ websocket_init({Req, State}) ->
   StateExt = HandlerExt:init(#{agent=>Agent, endpoint=>Endpoint2}),
   noreply(State#state{peer_endpoint = Endpoint2, state_ext = StateExt}).
 
-% websocket_handle({binary, EncodedMsg}, State) ->
-%   Msg = recv(EncodedMsg, State),
-%   handle(Msg, State);
+websocket_handle({binary, EncodedMsg}, State) ->
+  Msg = recv(EncodedMsg, State),
+  handle(Msg, State);
 websocket_handle(Msg, State) ->
   lager:debug("Ignored msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
-  % noreply(State).
-  {reply, {text, <<"{\"foo\":[\"bing\",2.3,true]}">>}, State}.
+  noreply(State).
 
 websocket_info(Msg, State) ->
   handle(Msg, State).
@@ -107,7 +106,7 @@ handle(Msg, State) ->
 reply(Reply, State) ->
   lager:debug("Sending msg: ~p, to: ~p", [Reply, State#state.peer_endpoint]),
   EncodedMsg = maxwell_protocol:encode_msg(Reply),
-  {reply, {binary, EncodedMsg}, State}.
+  {[{binary, EncodedMsg}], State}.
 
 noreply(State) ->
   {ok, State}.

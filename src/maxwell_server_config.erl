@@ -10,13 +10,20 @@
 
 %% API
 -export([
-  get_handler_ext/0, 
-  get_port/0
+  get_port/0,
+  get_tls_key_dir/0,
+  get_handler_ext/0
 ]).
 
 get_port() ->
   {ok, Port} = application:get_env(maxwell_server, port),
   Port.
+
+get_tls_key_dir() ->
+  case application:get_env(maxwell_server, tls_key_dir) of
+    {ok, TlsKeyDir} -> TlsKeyDir;
+    undefined -> code:priv_dir(maxwell_server)
+  end.
 
 get_handler_ext() ->
   case application:get_env(maxwell_server, handler_ext) of

@@ -1,18 +1,18 @@
 {"1.1.0",
-[{<<"cowboy">>,{pkg,<<"cowboy">>,<<"2.6.3">>},0},
- {<<"cowlib">>,{pkg,<<"cowlib">>,<<"2.7.3">>},1},
+[{<<"cowboy">>,{pkg,<<"cowboy">>,<<"2.7.0">>},0},
+ {<<"cowlib">>,{pkg,<<"cowlib">>,<<"2.8.0">>},1},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
  {<<"gpb">>,{pkg,<<"gpb">>,<<"4.10.4">>},1},
  {<<"lager">>,{pkg,<<"lager">>,<<"3.8.0">>},0},
  {<<"maxwell_protocol">>,
   {git,"https://github.com/maxwell-dev/maxwell-protocol-erlang.git",
-       {ref,"91d980209ab0aef1cbe22cfc46ae9977ff3d7421"}},
+       {ref,"cbf749415590eac2785cbba195c503265ec0d6cc"}},
   0},
  {<<"ranch">>,{pkg,<<"ranch">>,<<"1.7.1">>},1}]}.
 [
 {pkg_hash,[
- {<<"cowboy">>, <<"99AA50E94E685557CAD82E704457336A453D4ABCB77839AD22DBE71F311FCC06">>},
- {<<"cowlib">>, <<"A7FFCD0917E6D50B4D5FB28E9E2085A0CEB3C97DEA310505F7460FF5ED764CE9">>},
+ {<<"cowboy">>, <<"91ED100138A764355F43316B1D23D7FF6BDB0DE4EA618CB5D8677C93A7A2F115">>},
+ {<<"cowlib">>, <<"FD0FF1787DB84AC415B8211573E9A30A3EBE71B5CBFF7F720089972B2319C8A4">>},
  {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
  {<<"gpb">>, <<"A83BEC05F331E2413E883930A104B1E167B1C1BE6A74244F68DC00911563CF1C">>},
  {<<"lager">>, <<"3402B9A7E473680CA179FC2F1D827CAB88DD37DD1E6113090C6F45EF05228A1C">>},

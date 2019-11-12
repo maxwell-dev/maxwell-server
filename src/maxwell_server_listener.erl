@@ -20,15 +20,15 @@ start() ->
       {"/", maxwell_server_handler, maxwell_server_handler:initial_state()}
     ]}
   ]),
-  PrivDir = code:priv_dir(maxwell_server),
-  lager:info("Loaded ca from dir: ~p", [PrivDir]),
+  TlsKeyDir = maxwell_server_config:get_tls_key_dir(),
+  lager:info("Loading tls key from dir: ~p", [TlsKeyDir]),
   {ok, _} = cowboy:start_tls(
     https,
     [
       {port, maxwell_server_config:get_port()},
-      {cacertfile, PrivDir ++ "/tls.pem"},
-		  {certfile, PrivDir ++ "/tls.pem"},
-		  {keyfile, PrivDir ++ "/tls.key"}
+      {cacertfile, TlsKeyDir ++ "/tls.pem"},
+		  {certfile, TlsKeyDir ++ "/tls.pem"},
+		  {keyfile, TlsKeyDir ++ "/tls.key"}
     ],
     #{env => #{dispatch => Dispatch}}
   ).
