@@ -11,7 +11,8 @@
 %% API
 -export([
   get_port/0,
-  get_tls_key_dir/0,
+  get_ssl_port/0,
+  get_cert_dir/0,
   get_handler_ext/0
 ]).
 
@@ -19,9 +20,13 @@ get_port() ->
   {ok, Port} = application:get_env(maxwell_server, port),
   Port.
 
-get_tls_key_dir() ->
-  case application:get_env(maxwell_server, tls_key_dir) of
-    {ok, TlsKeyDir} -> string:trim(TlsKeyDir, trailing, "/");
+get_ssl_port() ->
+  {ok, Port} = application:get_env(maxwell_server, ssl_port),
+  Port.
+
+get_cert_dir() ->
+  case application:get_env(maxwell_server, cert_dir) of
+    {ok, CertDir} -> string:trim(CertDir, trailing, "/");
     undefined -> code:priv_dir(maxwell_server)
   end.
 
