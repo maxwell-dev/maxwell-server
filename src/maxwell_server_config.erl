@@ -21,7 +21,7 @@ get_port() ->
 
 get_tls_key_dir() ->
   case application:get_env(maxwell_server, tls_key_dir) of
-    {ok, TlsKeyDir} -> TlsKeyDir;
+    {ok, TlsKeyDir} -> string:trim(TlsKeyDir, trailing, "/");
     undefined -> code:priv_dir(maxwell_server)
   end.
 
