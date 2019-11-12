@@ -20,8 +20,14 @@ start() ->
       {"/", maxwell_server_handler, maxwell_server_handler:initial_state()}
     ]}
   ]),
-  {ok, _} = cowboy:start_clear(
-    websocket_listener,
-    [{port, maxwell_server_config:get_port()}],
+  PrivDir = code:priv_dir(maxwell_server),
+  {ok, _} = cowboy:start_tls(
+    https,
+    [
+      {port, maxwell_server_config:get_port()},
+      {cacertfile, PrivDir ++ "/ssl/cowboy-ca.crt"},
+		  {certfile, PrivDir ++ "/ssl/server.crt"},
+		  {keyfile, PrivDir ++ "/ssl/server.key"}
+    ],
     #{env => #{dispatch => Dispatch}}
   ).
