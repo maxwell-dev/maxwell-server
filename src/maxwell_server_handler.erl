@@ -64,7 +64,7 @@ websocket_handle({binary, EncodedMsg}, State) ->
 websocket_handle(Msg, State) ->
   lager:debug("Ignored msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
   % noreply(State).
-  {reply, {text, Msg}, State}.
+  {reply, Msg, State}.
 
 websocket_info(Msg, State) ->
   handle(Msg, State).
