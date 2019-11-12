@@ -21,6 +21,7 @@ start() ->
     ]}
   ]),
   PrivDir = code:priv_dir(maxwell_server),
+  lager:info("Loaded ca from dir: ~p", [PrivDir]),
   {ok, _} = cowboy:start_tls(
     https,
     [
