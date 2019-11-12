@@ -26,7 +26,6 @@ start() ->
     https,
     [
       {port, maxwell_server_config:get_port()},
-      {cacertfile, PrivDir ++ "/ssl/server.crt"},
 		  {certfile, PrivDir ++ "/ssl/server.crt"},
 		  {keyfile, PrivDir ++ "/ssl/server.key"}
     ],
