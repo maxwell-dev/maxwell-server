@@ -26,8 +26,7 @@ start() ->
     https,
     [
       {port, maxwell_server_config:get_port()},
-      {cacertfile, PrivDir ++ "/ssl/cowboy-ca.crt"},
-		  {certfile, PrivDir ++ "/ssl/server.crt"},
+		  {certfile, PrivDir ++ "/ssl/server.pem"},
 		  {keyfile, PrivDir ++ "/ssl/server.key"}
     ],
     #{env => #{dispatch => Dispatch}}
