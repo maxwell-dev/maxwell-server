@@ -12,7 +12,8 @@
 -export([
   get_port/0,
   get_ssl_port/0,
-  get_cert_dir/0,
+  get_cert_file/0,
+  get_key_file/0,
   get_handler_ext/0
 ]).
 
@@ -24,10 +25,16 @@ get_ssl_port() ->
   {ok, Port} = application:get_env(maxwell_server, ssl_port),
   Port.
 
-get_cert_dir() ->
-  case application:get_env(maxwell_server, cert_dir) of
-    {ok, CertDir} -> string:trim(CertDir, trailing, "/");
-    undefined -> code:priv_dir(maxwell_server)
+get_cert_file() ->
+  case application:get_env(maxwell_server, cert_file) of
+    {ok, CertFile} -> CertFile;
+    undefined -> code:priv_dir(maxwell_server) ++ "/ssl.pem"
+  end.
+
+get_key_file() ->
+  case application:get_env(maxwell_server, key_file) of
+    {ok, KeyFile} -> KeyFile;
+    undefined -> code:priv_dir(maxwell_server) ++ "/ssl.key"
   end.
 
 get_handler_ext() ->
