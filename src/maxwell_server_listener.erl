@@ -22,12 +22,13 @@ start() ->
   ]),
   case maxwell_server_config:is_http_enabled() of 
     true -> start_http(Dispatch);
-    false -> ignore
+    false -> lager:info("Ignored http server.")
   end,
   case maxwell_server_config:is_https_enabled() of 
     true -> start_https(Dispatch);
-    false -> ignore
-  end.
+    false -> lager:info("Ignored https server.")
+  end,
+  ok.
 
 start_http(Dispatch) ->
   {ok, _} = cowboy:start_clear(

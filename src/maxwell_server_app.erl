@@ -34,7 +34,7 @@
   {error, Reason :: term()}).
 start(_StartType, _StartArgs) ->
   {ok, _} = application:ensure_all_started(lager),
-  {ok, _} = maxwell_server_listener:start(),
+  ok = maxwell_server_listener:start(),
   {ok, _} = maxwell_server_sup:start_link().
 
 %%--------------------------------------------------------------------
