@@ -15,19 +15,28 @@
 
 start() ->
   application:ensure_all_started(cowboy),
-
   Dispatch = cowboy_router:compile([
     {'_', [
       {"/", maxwell_server_handler, maxwell_server_handler:initial_state()}
     ]}
   ]),
+  case maxwell_server_config:is_http_enabled() of 
+    true -> start_http(Dispatch);
+    false -> ignore
+  end,
+  case maxwell_server_config:is_https_enabled() of 
+    true -> start_https(Dispatch);
+    false -> ignore
+  end.
 
+start_http(Dispatch) ->
   {ok, _} = cowboy:start_clear(
     http,
     [{port, maxwell_server_config:get_port()}],
     #{env => #{dispatch => Dispatch}}
-  ),
+  ).
 
+start_https(Dispatch) -> 
   CertFile = maxwell_server_config:get_cert_file(),
   KeyFile = maxwell_server_config:get_key_file(),
   lager:info("Loading ssl certificate file: ~p", [CertFile]),
