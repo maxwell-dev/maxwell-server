@@ -17,18 +17,29 @@ start() ->
   application:ensure_all_started(cowboy),
   Dispatch = cowboy_router:compile([
     {'_', [
-      {"/", maxwell_server_handler, maxwell_server_handler:initial_state()}
+      {
+        "/", 
+        maxwell_server_handler, 
+        maxwell_server_handler:initial_state()
+      }
     ]}
   ]),
-  case maxwell_server_config:is_http_enabled() of 
+  R = case maxwell_server_config:is_http_enabled() of 
     true -> start_http(Dispatch);
-    false -> lager:info("Ignored http server.")
+    false -> 
+      lager:debug("Ignored http server."),
+      ignored
   end,
-  case maxwell_server_config:is_https_enabled() of 
+  R2 = case maxwell_server_config:is_https_enabled() of 
     true -> start_https(Dispatch);
-    false -> lager:info("Ignored https server.")
+    false -> 
+      lager:debug("Ignored https server."),
+      ignored
   end,
-  ok.
+  case R =:= ignored andalso R2 =:= ignored of 
+    true -> erlang:exit(no_server_specified);
+    false -> ok
+  end.
 
 start_http(Dispatch) ->
   {ok, _} = cowboy:start_clear(
