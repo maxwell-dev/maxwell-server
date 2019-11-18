@@ -12,7 +12,8 @@
 
 %% API
 -export([
-  initial_state/0
+  initial_state/0,
+  send/2
 ]).
 
 %% Cowboy callbacks
@@ -24,6 +25,9 @@
   terminate/3
 ]).
 
+
+-define(SEND_CMD(Msg), {'$send', Msg}).
+
 -record(state, {handler_ext, peer_endpoint, state_ext}).
 
 %%%===================================================================
@@ -33,6 +37,9 @@
 initial_state() ->
   HandlerExt = maxwell_server_config:get_handler_ext(),
   #state{handler_ext = HandlerExt}.
+
+send(Pid, Msg) -> 
+  Pid ! ?SEND_CMD(Msg).
 
 %%%===================================================================
 %%% Cowboy callbacks
@@ -65,6 +72,8 @@ websocket_handle(Msg, State) ->
   lager:debug("Ignored msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
   noreply(State).
 
+websocket_info(?SEND_CMD(Msg), State) ->
+  reply(Msg, State);
 websocket_info(Msg, State) ->
   handle(Msg, State).
 
