@@ -50,7 +50,7 @@ init(Req, State) ->
   {cowboy_websocket,
     Req,
     {Req, State},
-    #{idle_timeout => 120000, max_frame_size => 16777216}
+    #{idle_timeout => 180000, max_frame_size => 16777216}
   }.
 
 websocket_init({Req, State}) ->
