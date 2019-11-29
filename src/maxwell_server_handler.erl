@@ -99,8 +99,8 @@ recv(EncodedMsg, State) ->
   lager:debug("Received msg: ~p, from: ~p", [Msg, State#state.peer_endpoint]),
   Msg.
 
-handle(#ping_req_t{}, State) ->
-  reply(#ping_rep_t{}, State);
+handle(#ping_req_t{ref = Ref}, State) ->
+  reply(#ping_rep_t{ref = Ref}, State);
 handle(Msg, State) ->
   HandlerExt = State#state.handler_ext,
   case HandlerExt:handle(Msg, State#state.state_ext) of
