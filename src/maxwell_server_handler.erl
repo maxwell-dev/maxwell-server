@@ -103,13 +103,16 @@ handle(#ping_req_t{ref = Ref}, State) ->
   reply(#ping_rep_t{ref = Ref}, State);
 handle(Msg, State) ->
   HandlerExt = State#state.handler_ext,
-  case HandlerExt:handle(Msg, State#state.state_ext) of
+  case (catch HandlerExt:handle(Msg, State#state.state_ext)) of
     {reply, Reply, StateExt} ->
       reply(Reply, State#state{state_ext = StateExt});
     {noreply, StateExt} ->
       noreply(State#state{state_ext = StateExt});
     {stop, _, StateExt} ->
-      stop(State#state{state_ext = StateExt})
+      stop(State#state{state_ext = StateExt});
+    Error ->
+      lager:error("Failed to handle: error: ~p", [Error]),
+      stop(State)
   end.
 
 reply(Reply, State) ->
